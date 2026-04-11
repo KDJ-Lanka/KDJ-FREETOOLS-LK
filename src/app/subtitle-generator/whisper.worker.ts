@@ -24,7 +24,7 @@ self.onmessage = async (e: MessageEvent) => {
     try {
       const result = await asr(audio as Float32Array, {
         language: language || "english",
-        return_timestamps: "word",
+        return_timestamps: true,
         chunk_length_s: 30,
         stride_length_s: 5,
       });
