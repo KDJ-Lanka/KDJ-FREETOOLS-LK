@@ -8,6 +8,15 @@ type Chunk = { id: string; start: number; end: number; text: string };
 
 const LANGUAGES = [
   { value: "english", label: "English" },
+  { value: "sinhala", label: "Sinhala (සිංහල)" },
+  { value: "tamil", label: "Tamil (தமிழ்)" },
+  { value: "hindi", label: "Hindi" },
+  { value: "arabic", label: "Arabic" },
+  { value: "french", label: "French" },
+  { value: "spanish", label: "Spanish" },
+  { value: "german", label: "German" },
+  { value: "chinese", label: "Chinese" },
+  { value: "japanese", label: "Japanese" },
 ];
 
 function fmtSrt(s: number) {

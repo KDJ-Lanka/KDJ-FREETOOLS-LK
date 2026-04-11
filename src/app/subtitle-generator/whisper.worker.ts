@@ -1,45 +1,67 @@
 import { pipeline, AutomaticSpeechRecognitionPipeline } from "@huggingface/transformers";
 
-let asr: AutomaticSpeechRecognitionPipeline | null = null;
+// Two model slots — tiny for English, base for multilingual
+let asrTiny: AutomaticSpeechRecognitionPipeline | null = null;
+let asrBase: AutomaticSpeechRecognitionPipeline | null = null;
 
-const CHUNK_SEC = 28;   // seconds per chunk
-const OVERLAP_SEC = 2;  // overlap to avoid cutting words
+const CHUNK_SEC = 28;
+const OVERLAP_SEC = 2;
 const SAMPLE_RATE = 16000;
+
+// Languages that need the base model for decent accuracy
+const BASE_LANGUAGES = new Set(["sinhala", "tamil", "hindi", "arabic", "french", "spanish", "german", "chinese", "japanese"]);
+
+async function getAsr(language: string): Promise<AutomaticSpeechRecognitionPipeline> {
+  const useBase = BASE_LANGUAGES.has(language);
+  if (useBase) {
+    if (!asrBase) {
+      self.postMessage({ type: "status", message: "Preparing, please wait..." });
+      asrBase = await pipeline("automatic-speech-recognition", "onnx-community/whisper-base", {
+        dtype: { encoder_model: "fp32", decoder_model_merged: "q4" },
+        device: "wasm",
+      });
+    }
+    return asrBase;
+  } else {
+    if (!asrTiny) {
+      self.postMessage({ type: "status", message: "Preparing, please wait..." });
+      asrTiny = await pipeline("automatic-speech-recognition", "onnx-community/whisper-tiny", {
+        dtype: { encoder_model: "fp32", decoder_model_merged: "q4" },
+        device: "wasm",
+      });
+    }
+    return asrTiny;
+  }
+}
 
 self.onmessage = async (e: MessageEvent) => {
   const { type, audio, language } = e.data;
 
   if (type === "load") {
-    self.postMessage({ type: "status", message: "Preparing, please wait..." });
-    asr = await pipeline("automatic-speech-recognition", "onnx-community/whisper-tiny", {
-      dtype: { encoder_model: "fp32", decoder_model_merged: "q4" },
-      device: "wasm",
-    });
+    // Pre-load tiny model by default
+    await getAsr("english");
     self.postMessage({ type: "ready" });
     return;
   }
 
   if (type === "transcribe") {
-    if (!asr) { self.postMessage({ type: "error", message: "Not ready." }); return; }
+    try {
+      const asr = await getAsr(language || "english");
+      const pcm = audio as Float32Array;
+      const chunkSamples = CHUNK_SEC * SAMPLE_RATE;
+      const overlapSamples = OVERLAP_SEC * SAMPLE_RATE;
+      const totalChunks = Math.ceil(pcm.length / chunkSamples);
 
-    const pcm = audio as Float32Array;
-    const chunkSamples = CHUNK_SEC * SAMPLE_RATE;
-    const overlapSamples = OVERLAP_SEC * SAMPLE_RATE;
-    const totalChunks = Math.ceil(pcm.length / chunkSamples);
+      self.postMessage({ type: "status", message: `Transcribing (0 / ${totalChunks} chunks)...` });
 
-    self.postMessage({ type: "status", message: `Transcribing (0 / ${totalChunks} chunks)...` });
+      for (let i = 0; i < totalChunks; i++) {
+        const start = Math.max(0, i * chunkSamples - (i > 0 ? overlapSamples : 0));
+        const end = Math.min(pcm.length, (i + 1) * chunkSamples);
+        const slice = pcm.slice(start, end);
+        const offsetSec = start / SAMPLE_RATE;
 
-    let timeOffset = 0;
+        self.postMessage({ type: "status", message: `Transcribing (${i + 1} / ${totalChunks} chunks)...` });
 
-    for (let i = 0; i < totalChunks; i++) {
-      const start = Math.max(0, i * chunkSamples - (i > 0 ? overlapSamples : 0));
-      const end = Math.min(pcm.length, (i + 1) * chunkSamples);
-      const slice = pcm.slice(start, end);
-      const offsetSec = start / SAMPLE_RATE;
-
-      self.postMessage({ type: "status", message: `Transcribing (${i + 1} / ${totalChunks} chunks)...` });
-
-      try {
         const result = await asr(slice, {
           language: language || "english",
           return_timestamps: true,
@@ -49,7 +71,6 @@ self.onmessage = async (e: MessageEvent) => {
           ? [{ text: result.text.trim(), timestamp: [0, slice.length / SAMPLE_RATE] as [number, number] }]
           : []);
 
-        // Adjust timestamps by the chunk offset, skip overlap region results on non-first chunks
         const adjusted = chunks
           .filter((c) => i === 0 || c.timestamp[0] >= OVERLAP_SEC)
           .map((c) => ({
@@ -66,14 +87,11 @@ self.onmessage = async (e: MessageEvent) => {
         if (adjusted.length > 0) {
           self.postMessage({ type: "chunk", data: adjusted });
         }
-
-        timeOffset = end / SAMPLE_RATE;
-      } catch (err) {
-        self.postMessage({ type: "error", message: String(err) });
-        return;
       }
-    }
 
-    self.postMessage({ type: "done" });
+      self.postMessage({ type: "done" });
+    } catch (err) {
+      self.postMessage({ type: "error", message: String(err) });
+    }
   }
 };
