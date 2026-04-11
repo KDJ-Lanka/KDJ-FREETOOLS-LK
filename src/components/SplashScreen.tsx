@@ -40,7 +40,7 @@ export default function SplashScreen() {
       {/* Logo mark */}
       <div style={{ position: "relative", marginBottom: "18px" }}>
         <img
-          src="/freetoolslogo.png"
+          src="/icon.png"
           alt="FreeTools.lk"
           style={{ width: 72, height: 72, borderRadius: 18, objectFit: "contain", boxShadow: "0 8px 32px rgba(239,68,68,0.25)" }}
         />
