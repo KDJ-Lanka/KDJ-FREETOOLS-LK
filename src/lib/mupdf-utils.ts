@@ -41,9 +41,10 @@ export async function mupdfUnlock(
   const doc = mupdf.Document.openDocument(pdfBytes, "application/pdf");
   if (doc.needsPassword()) {
     const result = doc.authenticatePassword(password);
-    if (result === 0) throw new Error("Incorrect password");
+    if (result === 0) throw new Error("Incorrect password. Please check and try again.");
   }
-  const buf = doc.saveToBuffer("compress,garbage=4");
+  // encrypt=none explicitly strips all encryption from the saved file
+  const buf = doc.saveToBuffer("encrypt=none,compress,garbage=4");
   doc.destroy();
   const raw = buf.asUint8Array();
   return raw.slice();
