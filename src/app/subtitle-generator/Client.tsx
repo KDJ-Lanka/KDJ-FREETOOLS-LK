@@ -115,18 +115,17 @@ export default function SubtitleGeneratorClient() {
       await new Promise<void>((resolve, reject) => {
         worker.onmessage = (e) => {
           if (e.data.type === "status") setStatus(e.data.message);
-          if (e.data.type === "result") {
-            const raw = e.data.data;
-            const rawChunks = raw.chunks ?? (raw.text ? [{ text: raw.text, timestamp: [0, 0] }] : []);
-            const parsed: Chunk[] = rawChunks.map((c: { text: string; timestamp: [number, number | null] }) => ({
+          if (e.data.type === "chunk") {
+            const incoming = (e.data.data as { text: string; timestamp: [number, number | null] }[]);
+            const parsed: Chunk[] = incoming.map((c) => ({
               id: uid(),
               start: c.timestamp[0] ?? 0,
               end: c.timestamp[1] ?? (c.timestamp[0] ?? 0) + 3,
-              text: c.text.trim(),
+              text: c.text,
             }));
-            setChunks(parsed);
-            resolve();
+            setChunks((prev) => [...prev, ...parsed]);
           }
+          if (e.data.type === "done") resolve();
           if (e.data.type === "error") reject(new Error(e.data.message));
         };
         worker.postMessage({ type: "transcribe", audio: pcm, language }, [pcm.buffer]);
@@ -171,7 +170,7 @@ export default function SubtitleGeneratorClient() {
 
   return (
     <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-10">
-      <ProcessingOverlay active={processing} label={status || "Processing..."} />
+      <ProcessingOverlay active={processing && chunks.length === 0} label={status || "Processing..."} />
 
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
@@ -234,6 +233,13 @@ export default function SubtitleGeneratorClient() {
       {file && chunks.length === 0 && (
         <div className="space-y-4 mb-6">
           <div>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Language spoken in the video</label>
+            <select value={language} onChange={(e) => setLanguage(e.target.value)}
+              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
+            </select>
+          </div>
+          <div>
             <button onClick={run} disabled={processing}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors">
             Generate Subtitles
@@ -251,6 +257,17 @@ export default function SubtitleGeneratorClient() {
       {/* Caption timeline editor */}
       {chunks.length > 0 && (
         <div className="space-y-4">
+          {/* Streaming progress banner */}
+          {processing && chunks.length > 0 && (
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 text-sm text-blue-700 dark:text-blue-400">
+              <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+              </svg>
+              <span>{status || "Generating subtitles..."}</span>
+            </div>
+          )}
+
           {/* Toolbar */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">{chunks.length} captions — click any row to seek, edit text inline</p>
