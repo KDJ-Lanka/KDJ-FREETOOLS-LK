@@ -162,25 +162,32 @@ export default function CropImage() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1.5">Left / X (px)</label>
-              <input type="number" min={0} max={origW - 1} value={x} onChange={(e) => setX(Number(e.target.value))}
+              <input type="number" min={0} max={origW - 1} value={x}
+                onChange={(e) => { const v = Math.max(0, Math.min(Number(e.target.value), origW - 1)); setX(v); setCropW((w) => Math.min(w, origW - v)); }}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">Top / Y (px)</label>
-              <input type="number" min={0} max={origH - 1} value={y} onChange={(e) => setY(Number(e.target.value))}
+              <input type="number" min={0} max={origH - 1} value={y}
+                onChange={(e) => { const v = Math.max(0, Math.min(Number(e.target.value), origH - 1)); setY(v); setCropH((h) => Math.min(h, origH - v)); }}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">Width (px)</label>
-              <input type="number" min={1} max={origW} value={cropW} onChange={(e) => setCropW(Number(e.target.value))}
+              <input type="number" min={1} max={origW - x} value={cropW}
+                onChange={(e) => setCropW(Math.max(1, Math.min(Number(e.target.value), origW - x)))}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">Height (px)</label>
-              <input type="number" min={1} max={origH} value={cropH} onChange={(e) => setCropH(Number(e.target.value))}
+              <input type="number" min={1} max={origH - y} value={cropH}
+                onChange={(e) => setCropH(Math.max(1, Math.min(Number(e.target.value), origH - y)))}
                 className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm" />
             </div>
           </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 -mt-2">
+            Max width: {origW - x}px · Max height: {origH - y}px
+          </p>
 
           {cropW > 0 && cropH > 0 && (
             <div>
