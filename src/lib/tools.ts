@@ -53,4 +53,5 @@ export const TOOLS: Tool[] = [
   { id: "video-to-gif",     name: "Video to GIF",        icon: "🎞️", description: "Convert a short video clip into an animated GIF.",                          category: "video", isNew: true },
   { id: "mute-video",       name: "Mute Video",          icon: "🔇", description: "Remove the audio track from a video completely.",                            category: "video", isNew: true },
   { id: "rotate-video",     name: "Rotate Video",        icon: "↩️", description: "Rotate or flip a video in any direction.",                                  category: "video", isNew: true },
+  { id: "subtitle-generator", name: "Subtitle Generator", icon: "💬", description: "Auto-generate subtitles from any video or audio file. Download as SRT, VTT or plain text.", category: "video", popular: true, isNew: true },
 ];
