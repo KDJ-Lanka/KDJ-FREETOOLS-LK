@@ -1,12 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { CATEGORIES, TOOLS, CAT_LABEL, type CategoryId } from "@/lib/tools";
 
-export default function Home() {
-  const [activeCategory, setActiveCategory] = useState<CategoryId>("all");
+function HomeInner() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const catParam = (searchParams.get("cat") ?? "all") as CategoryId;
+  const [activeCategory, setActiveCategory] = useState<CategoryId>(catParam);
   const [query, setQuery] = useState("");
+
+  // Sync state when URL param changes (e.g. sidebar click)
+  useEffect(() => {
+    setActiveCategory(catParam);
+  }, [catParam]);
+
+  const handleCatChange = (cat: CategoryId) => {
+    setActiveCategory(cat);
+    router.push(cat === "all" ? "/" : `/?cat=${cat}`, { scroll: false });
+  };
 
   const counts = useMemo(() => {
     const out: Partial<Record<CategoryId, number>> = { all: TOOLS.length };
@@ -49,7 +63,7 @@ export default function Home() {
           <button
             key={cat.id}
             type="button"
-            onClick={() => setActiveCategory(cat.id)}
+            onClick={() => handleCatChange(cat.id)}
             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
               activeCategory === cat.id
                 ? "bg-red-600 text-white"
@@ -58,6 +72,25 @@ export default function Home() {
           >
             {cat.emoji} {cat.label}
             <span className="ml-1 opacity-60">{counts[cat.id]}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Desktop category tabs */}
+      <div className="hidden lg:flex gap-2 px-6 pb-3 shrink-0">
+        {CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            type="button"
+            onClick={() => handleCatChange(cat.id)}
+            className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+              activeCategory === cat.id
+                ? "bg-red-600 text-white shadow-sm"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            }`}
+          >
+            {cat.emoji} {cat.label}
+            <span className="ml-1.5 text-xs opacity-60">{counts[cat.id]}</span>
           </button>
         ))}
       </div>
@@ -154,5 +187,13 @@ export default function Home() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<main className="flex-1 p-8 text-slate-400">Loading…</main>}>
+      <HomeInner />
+    </Suspense>
   );
 }

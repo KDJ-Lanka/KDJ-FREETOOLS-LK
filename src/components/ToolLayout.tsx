@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { CATEGORIES, TOOLS, CAT_LABEL } from "@/lib/tools";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { CATEGORIES, TOOLS } from "@/lib/tools";
 
 type Theme = "light" | "dark";
 
@@ -14,11 +14,49 @@ function toggleTheme() {
   try { localStorage.setItem("freetools-theme", next); } catch { /* ignore */ }
 }
 
+// Isolated component so useSearchParams only affects this subtree (Suspense boundary)
+function CategoryNav({ isHome }: { isHome: boolean }) {
+  const searchParams = useSearchParams();
+  const searchCat = searchParams.get("cat");
+
+  return (
+    <nav className="px-2 pb-2 space-y-0.5">
+      {CATEGORIES.map((cat) => {
+        const href = cat.id === "all" ? "/" : `/?cat=${cat.id}`;
+        const active = isHome && (
+          cat.id === "all"
+            ? !searchCat || searchCat === "all"
+            : searchCat === cat.id
+        );
+        const count = cat.id === "all" ? TOOLS.length : TOOLS.filter((t) => t.category === cat.id).length;
+        return (
+          <Link
+            key={cat.id}
+            href={href}
+            className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+              active
+                ? "bg-red-600 text-white shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <span>{cat.emoji}</span>
+              <span>{cat.label}</span>
+            </span>
+            <span className={`text-xs tabular-nums font-semibold ${active ? "text-red-200" : "text-slate-400 dark:text-slate-600"}`}>
+              {count}
+            </span>
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}
+
 export default function ToolLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  /* active tool / category */
   const activeTool = TOOLS.find((t) => `/${t.id}` === pathname);
   const isHome = pathname === "/";
 
@@ -48,32 +86,10 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
           </p>
         </div>
 
-        {/* Category nav */}
-        <nav className="px-2 pb-2 space-y-0.5">
-          {CATEGORIES.map((cat) => {
-            const active = isHome && cat.id === "all";
-            const count = cat.id === "all" ? TOOLS.length : TOOLS.filter((t) => t.category === cat.id).length;
-            return (
-              <Link
-                key={cat.id}
-                href="/"
-                className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-red-600 text-white shadow-sm"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <span>{cat.emoji}</span>
-                  <span>{cat.label}</span>
-                </span>
-                <span className={`text-xs tabular-nums font-semibold ${active ? "text-red-200" : "text-slate-400 dark:text-slate-600"}`}>
-                  {count}
-                </span>
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Category nav — wrapped in Suspense because it uses useSearchParams */}
+        <Suspense fallback={<div className="px-2 pb-2 space-y-0.5">{CATEGORIES.map(c => <div key={c.id} className="h-9 mx-1 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />)}</div>}>
+          <CategoryNav isHome={isHome} />
+        </Suspense>
 
         {/* Tool links grouped by category */}
         <div className="flex-1 overflow-y-auto pb-2">
