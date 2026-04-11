@@ -44,7 +44,7 @@ export default function SplashScreen() {
         <img
           src="/icon.png"
           alt="FreeTools.lk"
-          style={{ width: 72, height: 72, borderRadius: 18, objectFit: "contain", boxShadow: "0 8px 32px rgba(239,68,68,0.25)" }}
+          style={{ width: 72, height: 72, borderRadius: 18, objectFit: "contain" }}
         />
       </div>
 
