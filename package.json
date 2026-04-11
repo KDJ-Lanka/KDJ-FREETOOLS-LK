@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@cantoo/pdf-lib": "^2.6.5",
+    "@ffmpeg/core-mt": "^0.12.10",
+    "@ffmpeg/ffmpeg": "^0.12.15",
+    "@ffmpeg/util": "^0.12.2",
     "@imagemagick/magick-wasm": "^0.0.39",
     "jszip": "^3.10.1",
     "mupdf": "^1.27.0",

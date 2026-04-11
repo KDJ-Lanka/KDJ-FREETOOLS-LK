@@ -1,4 +1,4 @@
-export type CategoryId = "all" | "pdf" | "img";
+export type CategoryId = "all" | "pdf" | "img" | "video";
 
 export type Tool = {
   id: string;
@@ -12,15 +12,17 @@ export type Tool = {
 };
 
 export const CATEGORIES: { id: CategoryId; label: string; emoji: string }[] = [
-  { id: "all",  label: "All tools",    emoji: "⚡" },
-  { id: "pdf",  label: "PDF Tools",    emoji: "📄" },
-  { id: "img",  label: "Image Tools",  emoji: "🖼️" },
+  { id: "all",   label: "All tools",    emoji: "⚡" },
+  { id: "pdf",   label: "PDF Tools",    emoji: "📄" },
+  { id: "img",   label: "Image Tools",  emoji: "🖼️" },
+  { id: "video", label: "Video Tools",  emoji: "🎬" },
 ];
 
 export const CAT_LABEL: Record<CategoryId, string> = {
-  all: "All",
-  pdf: "PDF",
-  img: "Image",
+  all:   "All",
+  pdf:   "PDF",
+  img:   "Image",
+  video: "Video",
 };
 
 export const TOOLS: Tool[] = [
@@ -44,4 +46,11 @@ export const TOOLS: Tool[] = [
   { id: "rotate-image",     name: "Rotate & Flip",       icon: "↩️", description: "Rotate images and flip them horizontally or vertically.",                    category: "img", isNew: true },
   { id: "crop-image",       name: "Crop Image",          icon: "✂️", description: "Crop images to the exact size you need.",                                   category: "img", isNew: true },
   { id: "watermark-image",  name: "Watermark Image",     icon: "💧", description: "Add a text watermark to protect your images.",                              category: "img", isNew: true },
+  { id: "compress-video",   name: "Compress Video",      icon: "📦", description: "Reduce video file size while preserving quality.",                           category: "video", popular: true, isNew: true },
+  { id: "convert-video",    name: "Convert Video",       icon: "🔄", description: "Convert between MP4, WebM, AVI, MOV and more.",                             category: "video", popular: true, isNew: true },
+  { id: "trim-video",       name: "Trim Video",          icon: "✂️", description: "Cut your video — set a start and end point to keep only what you need.",    category: "video", popular: true, isNew: true },
+  { id: "extract-audio",    name: "Extract Audio",       icon: "🎵", description: "Pull the audio track from any video as MP3, WAV or AAC.",                   category: "video", isNew: true },
+  { id: "video-to-gif",     name: "Video to GIF",        icon: "🎞️", description: "Convert a short video clip into an animated GIF.",                          category: "video", isNew: true },
+  { id: "mute-video",       name: "Mute Video",          icon: "🔇", description: "Remove the audio track from a video completely.",                            category: "video", isNew: true },
+  { id: "rotate-video",     name: "Rotate Video",        icon: "↩️", description: "Rotate or flip a video in any direction.",                                  category: "video", isNew: true },
 ];

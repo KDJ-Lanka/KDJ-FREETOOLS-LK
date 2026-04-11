@@ -93,7 +93,7 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
 
         {/* Tool links grouped by category */}
         <div className="flex-1 overflow-y-auto pb-2">
-          {(["pdf", "img"] as const).map((catId) => {
+          {(["pdf", "img", "video"] as const).map((catId) => {
             const catTools = TOOLS.filter((t) => t.category === catId);
             const catInfo = CATEGORIES.find((c) => c.id === catId)!;
             return (
@@ -206,7 +206,7 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
         {/* Mobile drawer */}
         {mobileMenuOpen && (
           <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0d1117] px-3 py-3">
-            {(["pdf", "img"] as const).map((catId) => {
+            {(["pdf", "img", "video"] as const).map((catId) => {
               const catTools = TOOLS.filter((t) => t.category === catId);
               const catInfo = CATEGORIES.find((c) => c.id === catId)!;
               return (
