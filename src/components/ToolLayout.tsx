@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState } from "react";
 import { CATEGORIES, TOOLS } from "@/lib/tools";
 
@@ -12,6 +12,35 @@ function toggleTheme() {
     document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   try { localStorage.setItem("freetools-theme", next); } catch { /* ignore */ }
+}
+
+// Search input in header — reads/writes ?q= URL param
+function HeaderSearch() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const q = searchParams.get("q") ?? "";
+
+  const handleChange = (val: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (val) params.set("q", val);
+    else params.delete("q");
+    router.replace(`/?${params.toString()}`, { scroll: false });
+  };
+
+  return (
+    <div className="relative flex-1 max-w-sm">
+      <svg className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <circle cx="11" cy="11" r="7" /><path strokeLinecap="round" d="M21 21l-3.5-3.5" />
+      </svg>
+      <input
+        type="search"
+        value={q}
+        onChange={(e) => handleChange(e.target.value)}
+        placeholder="Search tools…"
+        className="w-full h-9 pl-9 pr-4 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+      />
+    </div>
+  );
 }
 
 // Isolated component so useSearchParams only affects this subtree (Suspense boundary)
@@ -166,6 +195,13 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
               <span className="text-slate-300 dark:text-slate-700">/</span>
               <span className="font-semibold text-slate-700 dark:text-slate-300">{activeTool.name}</span>
             </div>
+          )}
+
+          {/* Search bar — only on home */}
+          {isHome && (
+            <Suspense fallback={null}>
+              <HeaderSearch />
+            </Suspense>
           )}
 
           <div className="flex-1" />

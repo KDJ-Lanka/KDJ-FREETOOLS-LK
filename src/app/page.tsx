@@ -9,8 +9,8 @@ function HomeInner() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const catParam = (searchParams.get("cat") ?? "all") as CategoryId;
+  const query = searchParams.get("q") ?? "";
   const [activeCategory, setActiveCategory] = useState<CategoryId>(catParam);
-  const [query, setQuery] = useState("");
 
   // Sync state when URL param changes (e.g. sidebar click)
   useEffect(() => {
@@ -40,25 +40,8 @@ function HomeInner() {
   return (
     <main className="flex-1 flex flex-col">
 
-      {/* Search bar */}
-      <div className="px-4 sm:px-6 pt-6 pb-4">
-        <div className="relative max-w-lg">
-          <svg className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <circle cx="11" cy="11" r="7" />
-            <path strokeLinecap="round" d="M21 21l-3.5-3.5" />
-          </svg>
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tools…"
-            className="w-full h-10 pl-9 pr-4 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
-          />
-        </div>
-      </div>
-
       {/* Mobile category tabs */}
-      <div className="lg:hidden flex gap-2 overflow-x-auto px-4 pb-3 shrink-0">
+      <div className="lg:hidden flex gap-2 overflow-x-auto px-4 pt-4 pb-3 shrink-0">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
@@ -77,7 +60,7 @@ function HomeInner() {
       </div>
 
       {/* Desktop category tabs */}
-      <div className="hidden lg:flex gap-2 px-6 pb-3 shrink-0">
+      <div className="hidden lg:flex gap-2 px-6 pt-4 pb-3 shrink-0">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
@@ -178,7 +161,7 @@ function HomeInner() {
             </p>
             <button
               type="button"
-              onClick={() => setQuery("")}
+              onClick={() => router.replace("/", { scroll: false })}
               className="mt-4 text-sm text-red-600 dark:text-red-400 hover:underline"
             >
               Clear search
