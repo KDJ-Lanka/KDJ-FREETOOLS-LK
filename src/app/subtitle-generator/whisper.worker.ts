@@ -1,52 +1,34 @@
 import { pipeline, AutomaticSpeechRecognitionPipeline } from "@huggingface/transformers";
 
-// Two model slots — tiny for English, base for multilingual
-let asrTiny: AutomaticSpeechRecognitionPipeline | null = null;
-let asrBase: AutomaticSpeechRecognitionPipeline | null = null;
+let asr: AutomaticSpeechRecognitionPipeline | null = null;
 
 const CHUNK_SEC = 28;
 const OVERLAP_SEC = 2;
 const SAMPLE_RATE = 16000;
 
-// Languages that need the base model for decent accuracy
-const BASE_LANGUAGES = new Set(["sinhala", "tamil", "hindi", "arabic", "french", "spanish", "german", "chinese", "japanese"]);
-
-async function getAsr(language: string): Promise<AutomaticSpeechRecognitionPipeline> {
-  const useBase = BASE_LANGUAGES.has(language);
-  if (useBase) {
-    if (!asrBase) {
-      self.postMessage({ type: "status", message: "Preparing, please wait..." });
-      asrBase = await pipeline("automatic-speech-recognition", "onnx-community/whisper-base", {
-        dtype: { encoder_model: "fp32", decoder_model_merged: "q4" },
-        device: "wasm",
-      });
-    }
-    return asrBase;
-  } else {
-    if (!asrTiny) {
-      self.postMessage({ type: "status", message: "Preparing, please wait..." });
-      asrTiny = await pipeline("automatic-speech-recognition", "onnx-community/whisper-tiny", {
-        dtype: { encoder_model: "fp32", decoder_model_merged: "q4" },
-        device: "wasm",
-      });
-    }
-    return asrTiny;
+async function getAsr(): Promise<AutomaticSpeechRecognitionPipeline> {
+  if (!asr) {
+    self.postMessage({ type: "status", message: "Preparing, please wait..." });
+    asr = await pipeline("automatic-speech-recognition", "onnx-community/whisper-tiny", {
+      dtype: { encoder_model: "fp32", decoder_model_merged: "q4" },
+      device: "wasm",
+    });
   }
+  return asr;
 }
 
 self.onmessage = async (e: MessageEvent) => {
   const { type, audio, language } = e.data;
 
   if (type === "load") {
-    // Pre-load tiny model by default
-    await getAsr("english");
+    await getAsr();
     self.postMessage({ type: "ready" });
     return;
   }
 
   if (type === "transcribe") {
     try {
-      const asr = await getAsr(language || "english");
+      const model = await getAsr();
       const pcm = audio as Float32Array;
       const chunkSamples = CHUNK_SEC * SAMPLE_RATE;
       const overlapSamples = OVERLAP_SEC * SAMPLE_RATE;
@@ -62,7 +44,7 @@ self.onmessage = async (e: MessageEvent) => {
 
         self.postMessage({ type: "status", message: `Transcribing (${i + 1} / ${totalChunks} chunks)...` });
 
-        const result = await asr(slice, {
+        const result = await model(slice, {
           language: language || "english",
           return_timestamps: true,
         }) as { text: string; chunks?: { text: string; timestamp: [number, number | null] }[] };

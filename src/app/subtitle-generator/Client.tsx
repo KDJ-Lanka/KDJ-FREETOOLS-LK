@@ -8,7 +8,6 @@ type Chunk = { id: string; start: number; end: number; text: string };
 
 const LANGUAGES = [
   { value: "english", label: "English" },
-  { value: "sinhala", label: "Sinhala (සිංහල)" },
   { value: "tamil", label: "Tamil (தமிழ்)" },
   { value: "hindi", label: "Hindi" },
   { value: "arabic", label: "Arabic" },
@@ -60,6 +59,7 @@ function uid() { return Math.random().toString(36).slice(2); }
 export default function SubtitleGeneratorClient() {
   const [file, setFile] = useState<File | null>(null);
   const [language, setLanguage] = useState("english");
+  // quality selector removed — single model only
   const [status, setStatus] = useState("");
   const [processing, setProcessing] = useState(false);
   const [chunks, setChunks] = useState<Chunk[]>([]);
