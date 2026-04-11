@@ -102,7 +102,7 @@ export default function SubtitleGeneratorClient() {
       const decoded = await audioCtx.decodeAudioData(arrayBuffer);
       const pcm = decoded.getChannelData(0);
 
-      setStatus("Loading AI model (first time ~40 MB, then cached)...");
+      setStatus("Preparing, please wait...");
       const worker = await loadWorker();
 
       setStatus("Transcribing...");
@@ -202,8 +202,8 @@ export default function SubtitleGeneratorClient() {
       </div>
 
       <div className="mb-6 flex gap-2 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 px-4 py-3 text-sm text-blue-700 dark:text-blue-400">
-        <span>i</span>
-        <span>The AI model (~40 MB) is downloaded once and cached in your browser. No data is ever sent to any server.</span>
+        <span>ℹ️</span>
+        <span>Your files never leave your browser. All processing happens locally on your device.</span>
       </div>
 
       <button

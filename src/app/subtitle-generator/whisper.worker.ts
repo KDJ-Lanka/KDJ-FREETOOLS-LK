@@ -6,7 +6,7 @@ self.onmessage = async (e: MessageEvent) => {
   const { type, audio, language } = e.data;
 
   if (type === "load") {
-    self.postMessage({ type: "status", message: "Downloading model (first time only, ~40 MB)…" });
+    self.postMessage({ type: "status", message: "Preparing, please wait..." });
     asr = await pipeline("automatic-speech-recognition", "onnx-community/whisper-tiny", {
       dtype: { encoder_model: "fp32", decoder_model_merged: "q4" },
       device: "wasm",
