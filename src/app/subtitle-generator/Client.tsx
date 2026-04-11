@@ -8,15 +8,6 @@ type Chunk = { id: string; start: number; end: number; text: string };
 
 const LANGUAGES = [
   { value: "english", label: "English" },
-  { value: "sinhala", label: "Sinhala (සිංහල)" },
-  { value: "tamil", label: "Tamil (தமிழ்)" },
-  { value: "hindi", label: "Hindi" },
-  { value: "arabic", label: "Arabic" },
-  { value: "french", label: "French" },
-  { value: "spanish", label: "Spanish" },
-  { value: "german", label: "German" },
-  { value: "chinese", label: "Chinese" },
-  { value: "japanese", label: "Japanese" },
 ];
 
 function fmtSrt(s: number) {
@@ -243,16 +234,11 @@ export default function SubtitleGeneratorClient() {
       {file && chunks.length === 0 && (
         <div className="space-y-4 mb-6">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Language spoken in the video</label>
-            <select value={language} onChange={(e) => setLanguage(e.target.value)}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-              {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
-            </select>
-          </div>
-          <button onClick={run} disabled={processing}
+            <button onClick={run} disabled={processing}
             className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors">
             Generate Subtitles
           </button>
+        </div>
         </div>
       )}
 
