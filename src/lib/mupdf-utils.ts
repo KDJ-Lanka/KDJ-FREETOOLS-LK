@@ -1,14 +1,17 @@
-// Lazy-loads mupdf WASM — only runs in browser
+// Lazy-loads mupdf WASM from /public/mupdf/ — only runs in browser
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-// Use Function constructor to prevent Turbopack/bundler from statically analyzing
-// the import, since mupdf uses Node.js built-ins that aren't available in browsers.
+let _mupdf: any = null;
+
+// Load mupdf via URL so the bundler never tries to resolve the bare specifier.
+// Files are served from public/mupdf/ (copied from node_modules/mupdf/dist/).
 async function getMupdf(): Promise<any> {
   if (typeof window === "undefined") throw new Error("WASM only runs in browser");
-  const dynamicImport = new Function("mod", "return import(mod)");
-  const mod = await dynamicImport("mupdf");
-  return mod.default ?? mod;
+  if (_mupdf) return _mupdf;
+  const mod = await import(/* webpackIgnore: true */ "/mupdf/mupdf.js");
+  _mupdf = mod.default ?? mod;
+  return _mupdf;
 }
 
 export async function mupdfProtect(
