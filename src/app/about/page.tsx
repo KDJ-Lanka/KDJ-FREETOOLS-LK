@@ -2,10 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About — FreeTools.lk by KD Lanka (Pvt) Ltd",
-  description:
-    "FreeTools.lk is a free online tools platform built by KD Lanka (Pvt) Ltd. Learn about our mission to provide fast, private, browser-based tools for everyone in Sri Lanka and beyond.",
+  title: "About FreeTools.lk — Free Online Tools by KD Lanka (Pvt) Ltd",
+  description: "FreeTools.lk is a free online tools platform built by KD Lanka (Pvt) Ltd. Fast, private, browser-based PDF, image and video tools for everyone in Sri Lanka and beyond.",
+  keywords: ["freetools.lk", "free tools sri lanka", "kd lanka", "online tools", "pdf tools", "image tools", "video tools"],
+  openGraph: { title: "About FreeTools.lk", description: "Free online tools platform by KD Lanka (Pvt) Ltd — for Sri Lanka and the world.", url: "https://freetools.lk/about", type: "website" },
+  twitter: { card: "summary", title: "About FreeTools.lk", description: "Free online tools by KD Lanka (Pvt) Ltd." },
+  alternates: { canonical: "https://freetools.lk/about" },
 };
+
 
 export default function AboutPage() {
   return (
