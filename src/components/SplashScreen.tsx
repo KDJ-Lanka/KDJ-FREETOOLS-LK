@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 
 export default function SplashScreen() {
   const [phase, setPhase] = useState<"visible" | "fading" | "gone">("visible");
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
-    // Only show on first visit per session
+    setIsDark(document.documentElement.getAttribute("data-theme") === "dark");
+
     if (sessionStorage.getItem("ft-splash-shown")) {
       setPhase("gone");
       return;
@@ -31,7 +33,7 @@ export default function SplashScreen() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "#fff",
+        background: isDark ? "#000" : "#fff",
         transition: "opacity 0.55s ease",
         opacity: phase === "fading" ? 0 : 1,
         pointerEvents: phase === "fading" ? "none" : "all",
@@ -50,7 +52,7 @@ export default function SplashScreen() {
       <div style={{ textAlign: "center" }}>
         <p style={{
           fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px",
-          color: "#0f172a", lineHeight: 1,
+          color: isDark ? "#f1f5f9" : "#0f172a", lineHeight: 1,
           fontFamily: "var(--font-geist-sans, system-ui, sans-serif)",
         }}>
           FreeTools<span style={{ color: "#ef4444" }}>.lk</span>

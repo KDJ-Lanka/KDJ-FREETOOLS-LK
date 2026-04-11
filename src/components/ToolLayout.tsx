@@ -68,7 +68,8 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
 
         {/* Logo */}
         <Link href="/" className="flex items-center justify-center px-5 py-4 border-b border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-900 transition-colors">
-          <img src="/freetoolslogo.png" alt="FreeTools.lk" className="h-10 w-auto object-contain" />
+          <img src="/freetoolslogo.png" alt="FreeTools.lk" className="h-10 w-auto object-contain dark:hidden" />
+          <img src="/whitelogo.png" alt="FreeTools.lk" className="h-10 w-auto object-contain hidden dark:block" />
         </Link>
 
         {/* Category label */}
@@ -152,8 +153,8 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
 
           {/* Mobile logo */}
           <Link href="/" className="lg:hidden flex items-center gap-2 shrink-0">
-            <img src="/freetoolslogo.png" alt="FreeTools.lk" className="w-7 h-7 rounded-lg object-contain shadow" />
-            <span className="text-sm font-bold">FreeTools.lk</span>
+            <img src="/freetoolslogo.png" alt="FreeTools.lk" className="h-7 w-auto object-contain dark:hidden" />
+            <img src="/whitelogo.png" alt="FreeTools.lk" className="h-7 w-auto object-contain hidden dark:block" />
           </Link>
 
           {/* Breadcrumb (on tool pages) */}
