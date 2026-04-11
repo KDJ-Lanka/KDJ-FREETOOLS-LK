@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { mupdfProtect } from "@/lib/mupdf-utils";
+import { mupdfExtractText } from "@/lib/mupdf-utils";
 
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -9,24 +9,24 @@ function formatSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const INPUT_ID = "protect-pdf-file-input";
+const INPUT_ID = "pdf-to-text-file-input";
 
-export default function ProtectPdf() {
+export default function PdfToText() {
   const [bytes, setBytes] = useState<Uint8Array | null>(null);
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState(0);
-  const [userPwd, setUserPwd] = useState("");
-  const [ownerPwd, setOwnerPwd] = useState("");
-  const [showUser, setShowUser] = useState(false);
-  const [showOwner, setShowOwner] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [extractedText, setExtractedText] = useState<string | null>(null);
+  const [pageCount, setPageCount] = useState<number | null>(null);
 
   const loadFile = useCallback((file: File) => {
     setError(null);
     setDone(false);
+    setExtractedText(null);
+    setPageCount(null);
     if (file.type !== "application/pdf") { setError(`"${file.name}" is not a PDF.`); return; }
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -48,37 +48,43 @@ export default function ProtectPdf() {
     if (e.dataTransfer.files?.[0]) loadFile(e.dataTransfer.files[0]);
   };
 
-  const protect = async () => {
+  const extract = async () => {
     if (!bytes) return;
-    if (!userPwd.trim()) { setError("User password is required."); return; }
     setError(null);
     setProcessing(true);
     try {
-      const out = await mupdfProtect(bytes, userPwd, ownerPwd);
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${fileName.replace(/\.pdf$/i, "")}-protected.pdf`;
-      a.click();
-      URL.revokeObjectURL(url);
+      const text = await mupdfExtractText(bytes);
+      setExtractedText(text);
+      const pages = (text.match(/^--- Page \d+ ---$/gm) || []).length;
+      setPageCount(pages);
       setDone(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to protect PDF.");
+      setError(e instanceof Error ? e.message : "Failed to extract text from PDF.");
     } finally {
       setProcessing(false);
     }
+  };
+
+  const downloadText = () => {
+    if (!extractedText) return;
+    const blob = new Blob([extractedText], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${fileName.replace(/\.pdf$/i, "")}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-10">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <span className="text-3xl">🔐</span>
-          <h1 className="text-2xl sm:text-3xl font-black">Protect PDF</h1>
+          <span className="text-3xl">📝</span>
+          <h1 className="text-2xl sm:text-3xl font-black">PDF to Text</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Password-protect your PDF so only authorized users can open it. Everything runs in your browser.
+          Extract all text content from your PDF. Runs entirely in your browser — nothing is uploaded.
         </p>
       </div>
 
@@ -102,73 +108,58 @@ export default function ProtectPdf() {
           <span className="mt-0.5">⚠️</span><span>{error}</span>
         </div>
       )}
-      {done && (
-        <div className="mt-4 flex items-start gap-2 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-          <span>✅</span><span>Protected PDF downloaded successfully!</span>
-        </div>
-      )}
 
       {bytes && (
-        <div className="mt-6 space-y-5">
+        <div className="mt-6 space-y-4">
           <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <span className="text-xl">📄</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium truncate">{fileName}</p>
               <p className="text-xs text-slate-400 dark:text-slate-500">{formatSize(fileSize)}</p>
             </div>
-            <button type="button" onClick={() => { setBytes(null); setDone(false); }}
+            <button type="button" onClick={() => { setBytes(null); setDone(false); setExtractedText(null); }}
               className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-sm">✕</button>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
-              User password <span className="text-red-500">*</span>
-              <span className="font-normal text-slate-400 dark:text-slate-500 ml-1">(required to open)</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showUser ? "text" : "password"}
-                value={userPwd}
-                onChange={(e) => setUserPwd(e.target.value)}
-                placeholder="Enter user password"
-                className="w-full px-3 py-2 pr-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-              <button type="button" onClick={() => setShowUser(!showUser)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs px-1">
-                {showUser ? "🙈" : "👁️"}
-              </button>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Owner password
-              <span className="font-normal text-slate-400 dark:text-slate-500 ml-1">(optional, for permissions)</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showOwner ? "text" : "password"}
-                value={ownerPwd}
-                onChange={(e) => setOwnerPwd(e.target.value)}
-                placeholder="Enter owner password (optional)"
-                className="w-full px-3 py-2 pr-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-              <button type="button" onClick={() => setShowOwner(!showOwner)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs px-1">
-                {showOwner ? "🙈" : "👁️"}
-              </button>
-            </div>
           </div>
 
           <button
             type="button"
-            onClick={protect}
+            onClick={extract}
             disabled={processing}
             className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
           >
             {processing ? (
-              <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>Protecting…</>
-            ) : <>🔐 Protect &amp; Download</>}
+              <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>Extracting…</>
+            ) : <>📝 Extract Text</>}
+          </button>
+        </div>
+      )}
+
+      {done && extractedText && (
+        <div className="mt-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              ✅ Extracted from {pageCount} page{pageCount !== 1 ? "s" : ""}
+            </p>
+            <button
+              type="button"
+              onClick={downloadText}
+              className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
+            >
+              ⬇ Download .txt
+            </button>
+          </div>
+          <textarea
+            readOnly
+            value={extractedText.slice(0, 2000) + (extractedText.length > 2000 ? "\n\n[Preview truncated — download for full text]" : "")}
+            rows={12}
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 text-sm font-mono text-slate-700 dark:text-slate-300 focus:outline-none resize-none"
+          />
+          <button
+            type="button"
+            onClick={downloadText}
+            className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold text-sm transition-colors"
+          >
+            ⬇ Download Full Text (.txt)
           </button>
         </div>
       )}

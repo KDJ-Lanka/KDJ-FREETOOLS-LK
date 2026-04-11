@@ -30,12 +30,13 @@ export default function PdfToJpg() {
     const reader = new FileReader();
     reader.onload = async (e) => {
       try {
+        const raw = new Uint8Array(e.target!.result as ArrayBuffer);
+        const b = raw.slice(0); // copy for pdfjs (it transfers the buffer)
         const pdfjsLib = await import("pdfjs-dist");
         pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).href;
-        const b = new Uint8Array(e.target!.result as ArrayBuffer);
         const loadingTask = pdfjsLib.getDocument({ data: b });
         const pdf = await loadingTask.promise;
-        setBytes(b);
+        setBytes(raw.slice(0)); // store a fresh copy for convert()
         setFileName(file.name);
         setFileSize(file.size);
         setPageCount(pdf.numPages);
@@ -65,7 +66,7 @@ export default function PdfToJpg() {
     try {
       const pdfjsLib = await import("pdfjs-dist");
       pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).href;
-      const loadingTask = pdfjsLib.getDocument({ data: bytes });
+      const loadingTask = pdfjsLib.getDocument({ data: bytes.slice(0) });
       const pdf = await loadingTask.promise;
       const zip = new JSZip();
 

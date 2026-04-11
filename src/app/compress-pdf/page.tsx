@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { PDFDocument } from "pdf-lib";
+import { mupdfCompress } from "@/lib/mupdf-utils";
 
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -51,10 +51,9 @@ export default function CompressPdf() {
     setError(null);
     setProcessing(true);
     try {
-      const doc = await PDFDocument.load(bytes);
-      const outBytes = await doc.save({ useObjectStreams: true });
-      setCompressedSize(outBytes.byteLength);
-      const blob = new Blob([outBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const out = await mupdfCompress(bytes);
+      setCompressedSize(out.byteLength);
+      const blob = new Blob([out.buffer as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -62,8 +61,8 @@ export default function CompressPdf() {
       a.click();
       URL.revokeObjectURL(url);
       setDone(true);
-    } catch {
-      setError("Failed to compress PDF. Make sure it is not encrypted.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to compress PDF. Make sure it is not encrypted.");
     } finally {
       setProcessing(false);
     }
@@ -79,7 +78,7 @@ export default function CompressPdf() {
           <h1 className="text-2xl sm:text-3xl font-black">Compress PDF</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Reduce the file size of your PDF. Everything runs in your browser — your files never leave your device.
+          Reduce the file size of your PDF using advanced WASM-powered compression. Everything runs in your browser — your files never leave your device.
         </p>
       </div>
 

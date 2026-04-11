@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { mupdfProtect } from "@/lib/mupdf-utils";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -9,20 +9,21 @@ function formatSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-const INPUT_ID = "protect-pdf-file-input";
+const INPUT_ID = "add-page-numbers-file-input";
 
-export default function ProtectPdf() {
+type Position = "bottom-center" | "bottom-left" | "bottom-right";
+
+export default function AddPageNumbers() {
   const [bytes, setBytes] = useState<Uint8Array | null>(null);
   const [fileName, setFileName] = useState("");
   const [fileSize, setFileSize] = useState(0);
-  const [userPwd, setUserPwd] = useState("");
-  const [ownerPwd, setOwnerPwd] = useState("");
-  const [showUser, setShowUser] = useState(false);
-  const [showOwner, setShowOwner] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [position, setPosition] = useState<Position>("bottom-center");
+  const [fontSize, setFontSize] = useState(12);
+  const [startNum, setStartNum] = useState(1);
 
   const loadFile = useCallback((file: File) => {
     setError(null);
@@ -48,23 +49,42 @@ export default function ProtectPdf() {
     if (e.dataTransfer.files?.[0]) loadFile(e.dataTransfer.files[0]);
   };
 
-  const protect = async () => {
+  const addNumbers = async () => {
     if (!bytes) return;
-    if (!userPwd.trim()) { setError("User password is required."); return; }
     setError(null);
     setProcessing(true);
     try {
-      const out = await mupdfProtect(bytes, userPwd, ownerPwd);
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: "application/pdf" });
+      const doc = await PDFDocument.load(bytes);
+      const font = await doc.embedFont(StandardFonts.Helvetica);
+      const pages = doc.getPages();
+      pages.forEach((page, i) => {
+        const { width, height } = page.getSize();
+        const label = String(startNum + i);
+        const textWidth = font.widthOfTextAtSize(label, fontSize);
+        const margin = 20;
+        let x: number;
+        if (position === "bottom-center") x = (width - textWidth) / 2;
+        else if (position === "bottom-left") x = margin;
+        else x = width - textWidth - margin;
+        page.drawText(label, {
+          x,
+          y: margin,
+          size: fontSize,
+          font,
+          color: rgb(0.3, 0.3, 0.3),
+        });
+      });
+      const outBytes = await doc.save();
+      const blob = new Blob([outBytes.buffer as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${fileName.replace(/\.pdf$/i, "")}-protected.pdf`;
+      a.download = `${fileName.replace(/\.pdf$/i, "")}-numbered.pdf`;
       a.click();
       URL.revokeObjectURL(url);
       setDone(true);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to protect PDF.");
+      setError(e instanceof Error ? e.message : "Failed to add page numbers.");
     } finally {
       setProcessing(false);
     }
@@ -74,11 +94,11 @@ export default function ProtectPdf() {
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-10">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <span className="text-3xl">🔐</span>
-          <h1 className="text-2xl sm:text-3xl font-black">Protect PDF</h1>
+          <span className="text-3xl">🔢</span>
+          <h1 className="text-2xl sm:text-3xl font-black">Add Page Numbers</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Password-protect your PDF so only authorized users can open it. Everything runs in your browser.
+          Stamp page numbers on every page of your PDF. Choose position, size, and starting number. Runs entirely in your browser.
         </p>
       </div>
 
@@ -104,7 +124,7 @@ export default function ProtectPdf() {
       )}
       {done && (
         <div className="mt-4 flex items-start gap-2 rounded-xl bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-900 px-4 py-3 text-sm text-green-700 dark:text-green-400">
-          <span>✅</span><span>Protected PDF downloaded successfully!</span>
+          <span>✅</span><span>Page numbers added and PDF downloaded successfully!</span>
         </div>
       )}
 
@@ -120,55 +140,54 @@ export default function ProtectPdf() {
               className="shrink-0 w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-sm">✕</button>
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
-              User password <span className="text-red-500">*</span>
-              <span className="font-normal text-slate-400 dark:text-slate-500 ml-1">(required to open)</span>
-            </label>
-            <div className="relative">
-              <input
-                type={showUser ? "text" : "password"}
-                value={userPwd}
-                onChange={(e) => setUserPwd(e.target.value)}
-                placeholder="Enter user password"
-                className="w-full px-3 py-2 pr-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-              />
-              <button type="button" onClick={() => setShowUser(!showUser)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs px-1">
-                {showUser ? "🙈" : "👁️"}
-              </button>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Position</label>
+              <select
+                value={position}
+                onChange={(e) => setPosition(e.target.value as Position)}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                <option value="bottom-center">Bottom Center</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="bottom-right">Bottom Right</option>
+              </select>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Owner password
-              <span className="font-normal text-slate-400 dark:text-slate-500 ml-1">(optional, for permissions)</span>
-            </label>
-            <div className="relative">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Font Size</label>
+              <select
+                value={fontSize}
+                onChange={(e) => setFontSize(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              >
+                <option value={10}>10pt</option>
+                <option value={12}>12pt</option>
+                <option value={14}>14pt</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">Start Number</label>
               <input
-                type={showOwner ? "text" : "password"}
-                value={ownerPwd}
-                onChange={(e) => setOwnerPwd(e.target.value)}
-                placeholder="Enter owner password (optional)"
-                className="w-full px-3 py-2 pr-10 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                type="number"
+                min={1}
+                value={startNum}
+                onChange={(e) => setStartNum(Math.max(1, Number(e.target.value)))}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
               />
-              <button type="button" onClick={() => setShowOwner(!showOwner)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs px-1">
-                {showOwner ? "🙈" : "👁️"}
-              </button>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={protect}
+            onClick={addNumbers}
             disabled={processing}
             className="w-full py-3 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
           >
             {processing ? (
-              <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>Protecting…</>
-            ) : <>🔐 Protect &amp; Download</>}
+              <><svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" /></svg>Processing…</>
+            ) : <>🔢 Add Page Numbers &amp; Download</>}
           </button>
         </div>
       )}

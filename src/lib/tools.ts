@@ -32,4 +32,8 @@ export const TOOLS: Tool[] = [
   { id: "protect-pdf",   name: "Protect PDF",     icon: "🔒", description: "Lock your PDF with a password to keep it private.",              category: "pdf"                },
   { id: "unlock-pdf",    name: "Unlock PDF",      icon: "🔓", description: "Remove the password from a PDF you own.",                         category: "pdf"                },
   { id: "reorder-pdf",   name: "Reorder Pages",   icon: "🗂️", description: "Drag and drop pages to rearrange them in any order.",             category: "pdf", isNew: true    },
+  { id: "pdf-to-text",   name: "PDF to Text",     icon: "📝", description: "Extract all text content from your PDF.",                       category: "pdf", isNew: true    },
+  { id: "pdf-grayscale", name: "PDF Grayscale",   icon: "🔘", description: "Convert a color PDF to black & white.",                         category: "pdf", isNew: true    },
+  { id: "add-page-numbers", name: "Add Page Numbers", icon: "🔢", description: "Stamp page numbers on every page of your PDF.",             category: "pdf", isNew: true    },
+  { id: "pdf-metadata",  name: "PDF Metadata",    icon: "🏷️", description: "View and edit PDF title, author, subject and keywords.",        category: "pdf", isNew: true    },
 ];

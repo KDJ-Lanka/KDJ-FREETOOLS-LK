@@ -38,7 +38,13 @@ export default function ReorderPdf() {
       try {
         const pdfjsLib = await import("pdfjs-dist");
         pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("pdfjs-dist/build/pdf.worker.mjs", import.meta.url).href;
-        const b = new Uint8Array(e.target!.result as ArrayBuffer);
+        const raw = new Uint8Array(e.target!.result as ArrayBuffer);
+        // Keep a separate copy — pdfjs-dist transfers the buffer to its worker
+        const b = raw.slice(0);
+        setPdfBytes(raw.slice(0));
+        setFileName(file.name);
+        setFileSize(file.size);
+
         const loadingTask = pdfjsLib.getDocument({ data: b });
         const pdf = await loadingTask.promise;
 
@@ -54,9 +60,6 @@ export default function ReorderPdf() {
           items.push({ originalIndex: i - 1, thumbnail: canvas.toDataURL() });
         }
 
-        setPdfBytes(b);
-        setFileName(file.name);
-        setFileSize(file.size);
         setPages(items);
       } catch {
         setError("Failed to load PDF.");

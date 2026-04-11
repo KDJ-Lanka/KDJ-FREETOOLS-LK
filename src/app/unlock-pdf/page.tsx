@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { PDFDocument } from "pdf-lib";
+import { mupdfUnlock } from "@/lib/mupdf-utils";
 
 function formatSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -51,10 +51,8 @@ export default function UnlockPdf() {
     setError(null);
     setProcessing(true);
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const doc = await PDFDocument.load(bytes, { password } as any);
-      const outBytes = await doc.save();
-      const blob = new Blob([outBytes.buffer as ArrayBuffer], { type: "application/pdf" });
+      const out = await mupdfUnlock(bytes, password);
+      const blob = new Blob([out.buffer as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -62,8 +60,8 @@ export default function UnlockPdf() {
       a.click();
       URL.revokeObjectURL(url);
       setDone(true);
-    } catch {
-      setError("Incorrect password or this PDF is not password protected.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to unlock PDF. Check your password.");
     } finally {
       setProcessing(false);
     }
@@ -77,7 +75,7 @@ export default function UnlockPdf() {
           <h1 className="text-2xl sm:text-3xl font-black">Unlock PDF</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Remove the password from a protected PDF. You need to know the password. Everything runs in your browser.
+          Remove the password from a protected PDF. You need to know the password. Leave the field blank if the PDF only has edit restrictions. Everything runs in your browser.
         </p>
       </div>
 
