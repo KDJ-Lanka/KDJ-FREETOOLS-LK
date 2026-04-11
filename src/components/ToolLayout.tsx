@@ -68,9 +68,7 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-900 transition-colors">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-red-600 to-rose-500 flex items-center justify-center text-white text-xs font-bold shadow shrink-0">
-            FT
-          </div>
+          <img src="/freetoolslogo.png" alt="FreeTools.lk" className="w-8 h-8 rounded-xl object-contain shadow shrink-0" />
           <div className="min-w-0">
             <p className="text-sm font-bold leading-none truncate">FreeTools.lk</p>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
@@ -160,9 +158,7 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
 
           {/* Mobile logo */}
           <Link href="/" className="lg:hidden flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-600 to-rose-500 flex items-center justify-center text-white text-[10px] font-bold shadow">
-              FT
-            </div>
+            <img src="/freetoolslogo.png" alt="FreeTools.lk" className="w-7 h-7 rounded-lg object-contain shadow" />
             <span className="text-sm font-bold">FreeTools.lk</span>
           </Link>
 

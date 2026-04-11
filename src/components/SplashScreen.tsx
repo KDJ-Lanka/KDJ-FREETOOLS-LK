@@ -39,24 +39,11 @@ export default function SplashScreen() {
     >
       {/* Logo mark */}
       <div style={{ position: "relative", marginBottom: "18px" }}>
-        <div style={{
-          width: 64, height: 64, borderRadius: 18,
-          background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 8px 32px rgba(239,68,68,0.30)",
-        }}>
-          <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-            <path d="M8 8h12a6 6 0 0 1 0 12H8V8z" fill="white" fillOpacity="0.95"/>
-            <path d="M8 20h8v6H8v-6z" fill="white" fillOpacity="0.7"/>
-          </svg>
-        </div>
-        {/* Animated ring */}
-        <div style={{
-          position: "absolute", inset: -6,
-          borderRadius: 24,
-          border: "2px solid rgba(239,68,68,0.20)",
-          animation: "splash-ring 1.2s ease-out forwards",
-        }}/>
+        <img
+          src="/freetoolslogo.png"
+          alt="FreeTools.lk"
+          style={{ width: 72, height: 72, borderRadius: 18, objectFit: "contain", boxShadow: "0 8px 32px rgba(239,68,68,0.25)" }}
+        />
       </div>
 
       {/* Wordmark */}

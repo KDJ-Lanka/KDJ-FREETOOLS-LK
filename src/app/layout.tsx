@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   title: "FreeTools.lk — Simple tools for everyone",
   description:
     "Free online tools for PDF, images, text, and developers. Fast, clean, and easy to use.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+    shortcut: "/icon.png",
+  },
 };
 
 export default function RootLayout({
