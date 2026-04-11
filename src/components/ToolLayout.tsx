@@ -131,8 +131,14 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
           })}
         </div>
 
-        {/* Bottom: stats + theme */}
+        {/* Bottom: about + theme */}
         <div className="px-3 py-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
+          <Link
+            href="/about"
+            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 transition-colors"
+          >
+            <span>ℹ️</span><span>About FreeTools.lk</span>
+          </Link>
           <button
             type="button"
             onClick={toggleTheme}
@@ -241,19 +247,28 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
         {/* Footer */}
         <footer className="border-t border-slate-200 dark:border-slate-800 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <p className="text-xs text-slate-400 dark:text-slate-500">
-            © {new Date().getFullYear()} FreeTools.lk — Simple tools for everyone
+            © {new Date().getFullYear()}{" "}
+            <Link href="/about" className="hover:text-red-600 dark:hover:text-red-400 transition-colors">FreeTools.lk</Link>
+            {" "}— Simple tools for everyone
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-3 text-xs text-slate-400 dark:text-slate-500">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-slate-400 dark:text-slate-500">
             <span>
-              Powered by{" "}
-              <span className="font-semibold text-slate-600 dark:text-slate-300">KDJ Lanka (Pvt) Ltd</span>
-            </span>
-            <span className="hidden sm:inline text-slate-300 dark:text-slate-700">|</span>
-            <span>
-              Hotline:{" "}
               <a href="tel:+940117228328" className="font-semibold text-red-600 dark:text-red-400 hover:underline">
                 0117 228 328
               </a>
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">·</span>
+            <span>
+              <a href="mailto:hello@kdj.lk" className="font-semibold text-red-600 dark:text-red-400 hover:underline">
+                hello@kdj.lk
+              </a>
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">·</span>
+            <span>
+              By{" "}
+              <Link href="/about" className="font-semibold text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 transition-colors">
+                KD Lanka (Pvt) Ltd
+              </Link>
             </span>
           </div>
         </footer>
