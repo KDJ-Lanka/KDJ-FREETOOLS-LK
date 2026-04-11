@@ -87,7 +87,7 @@ export default function CompressImage() {
           <h1 className="text-2xl sm:text-3xl font-black">Compress Image</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Reduce image file size with smart WASM-powered compression. Everything runs in your browser — your files never leave your device.
+          Reduce image file size with smart compression. Everything runs in your browser — your files never leave your device.
         </p>
       </div>
 

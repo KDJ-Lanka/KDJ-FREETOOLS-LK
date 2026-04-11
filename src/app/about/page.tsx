@@ -55,7 +55,7 @@ export default function AboutPage() {
             {
               icon: "🚀",
               title: "Blazing Fast",
-              desc: "Powered by WebAssembly — near-native speed for PDF and image operations right in the browser.",
+              desc: "Near-native speed for PDF and image operations — all processing happens right in your browser.",
             },
             {
               icon: "🆓",

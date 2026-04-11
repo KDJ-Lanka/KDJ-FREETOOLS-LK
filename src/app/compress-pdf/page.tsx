@@ -80,7 +80,7 @@ export default function CompressPdf() {
           <h1 className="text-2xl sm:text-3xl font-black">Compress PDF</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Reduce the file size of your PDF using advanced WASM-powered compression. Everything runs in your browser — your files never leave your device.
+          Reduce the file size of your PDF with advanced compression. Everything runs in your browser — your files never leave your device.
         </p>
       </div>
 
