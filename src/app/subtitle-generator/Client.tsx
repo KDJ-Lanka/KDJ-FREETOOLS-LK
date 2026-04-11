@@ -60,15 +60,15 @@ export default function SubtitleGeneratorClient() {
   const [currentTime, setCurrentTime] = useState(0);
   const [editingTime, setEditingTime] = useState<{ id: string; field: "start" | "end"; val: string } | null>(null);
   const workerRef = useRef<Worker | null>(null);
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
   const mediaRef = useRef<HTMLVideoElement | HTMLAudioElement | null>(null);
-  const mediaUrlRef = useRef<string>("");
   const rowRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const isVideo = file?.type.startsWith("video/");
 
   useEffect(() => {
-    if (!file) return;
+    if (!file) { setMediaUrl(null); return; }
     const url = URL.createObjectURL(file);
-    mediaUrlRef.current = url;
+    setMediaUrl(url);
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
@@ -204,7 +204,7 @@ export default function SubtitleGeneratorClient() {
             {isVideo ? (
               <video
                 ref={mediaRef as React.RefObject<HTMLVideoElement>}
-                src={mediaUrlRef.current}
+                src={mediaUrl ?? undefined}
                 controls
                 className="w-full max-h-64 object-contain"
                 onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
@@ -212,7 +212,7 @@ export default function SubtitleGeneratorClient() {
             ) : (
               <audio
                 ref={mediaRef as React.RefObject<HTMLAudioElement>}
-                src={mediaUrlRef.current}
+                src={mediaUrl ?? undefined}
                 controls
                 className="w-full p-3"
                 onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
