@@ -68,7 +68,7 @@ export default function Home() {
         {/* Heading */}
         <div className="mb-5">
           <h1 className="text-xl font-bold">
-            {activeCategory === "all" ? "All PDF Tools" : CAT_LABEL[activeCategory]}
+            {activeCategory === "all" ? "All Tools" : CAT_LABEL[activeCategory] + " Tools"}
           </h1>
           <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             {filtered.length} {filtered.length === 1 ? "tool" : "tools"}

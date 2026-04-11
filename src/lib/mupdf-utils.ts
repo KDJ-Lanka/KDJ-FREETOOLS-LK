@@ -9,6 +9,8 @@ let _mupdf: any = null;
 async function getMupdf(): Promise<any> {
   if (typeof window === "undefined") throw new Error("WASM only runs in browser");
   if (_mupdf) return _mupdf;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore – mupdf.js is a runtime-only file served from /public/mupdf/
   const mod = await import(/* webpackIgnore: true */ "/mupdf/mupdf.js");
   _mupdf = mod.default ?? mod;
   return _mupdf;

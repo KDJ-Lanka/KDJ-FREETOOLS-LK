@@ -75,37 +75,45 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
           })}
         </nav>
 
-        {/* Tools label */}
-        <div className="px-5 pt-3 pb-1">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">
-            PDF Tools
-          </p>
-        </div>
-
-        {/* Tool links */}
-        <nav className="flex-1 overflow-y-auto px-2 pb-2 space-y-0.5">
-          {TOOLS.map((tool) => {
-            const active = activeTool?.id === tool.id;
+        {/* Tool links grouped by category */}
+        <div className="flex-1 overflow-y-auto pb-2">
+          {(["pdf", "img"] as const).map((catId) => {
+            const catTools = TOOLS.filter((t) => t.category === catId);
+            const catInfo = CATEGORIES.find((c) => c.id === catId)!;
             return (
-              <Link
-                key={tool.id}
-                href={`/${tool.id}`}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
-                  tool.soon
-                    ? "opacity-40 pointer-events-none text-slate-500 dark:text-slate-500"
-                    : active
-                    ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 font-semibold"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
-                }`}
-              >
-                <span className="text-base leading-none shrink-0">{tool.icon}</span>
-                <span className="truncate">{tool.name}</span>
-                {tool.soon && <span className="ml-auto text-[10px] text-slate-400">soon</span>}
-                {tool.isNew && !tool.soon && <span className="ml-auto text-[10px] font-bold text-rose-500">NEW</span>}
-              </Link>
+              <div key={catId}>
+                <div className="px-5 pt-3 pb-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-600">
+                    {catInfo.emoji} {catInfo.label}
+                  </p>
+                </div>
+                <nav className="px-2 pb-1 space-y-0.5">
+                  {catTools.map((tool) => {
+                    const active = activeTool?.id === tool.id;
+                    return (
+                      <Link
+                        key={tool.id}
+                        href={`/${tool.id}`}
+                        className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          tool.soon
+                            ? "opacity-40 pointer-events-none text-slate-500 dark:text-slate-500"
+                            : active
+                            ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 font-semibold"
+                            : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
+                        }`}
+                      >
+                        <span className="text-base leading-none shrink-0">{tool.icon}</span>
+                        <span className="truncate">{tool.name}</span>
+                        {tool.soon && <span className="ml-auto text-[10px] text-slate-400">soon</span>}
+                        {tool.isNew && !tool.soon && <span className="ml-auto text-[10px] font-bold text-rose-500">NEW</span>}
+                      </Link>
+                    );
+                  })}
+                </nav>
+              </div>
             );
           })}
-        </nav>
+        </div>
 
         {/* Bottom: stats + theme */}
         <div className="px-3 py-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
@@ -175,27 +183,37 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
 
         {/* Mobile drawer */}
         {mobileMenuOpen && (
-          <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0d1117] px-3 py-3 space-y-0.5">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 px-3 pb-1">PDF Tools</p>
-            {TOOLS.map((tool) => (
-              <Link
-                key={tool.id}
-                href={`/${tool.id}`}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
-                  tool.soon
-                    ? "opacity-40 pointer-events-none text-slate-500"
-                    : activeTool?.id === tool.id
-                    ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 font-semibold"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800"
-                }`}
-              >
-                <span>{tool.icon}</span>
-                <span>{tool.name}</span>
-                {tool.soon && <span className="ml-auto text-[10px] text-slate-400">soon</span>}
-                {tool.isNew && !tool.soon && <span className="ml-auto text-[10px] font-bold text-rose-500">NEW</span>}
-              </Link>
-            ))}
+          <div className="lg:hidden border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0d1117] px-3 py-3">
+            {(["pdf", "img"] as const).map((catId) => {
+              const catTools = TOOLS.filter((t) => t.category === catId);
+              const catInfo = CATEGORIES.find((c) => c.id === catId)!;
+              return (
+                <div key={catId} className="mb-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 px-3 pb-1 pt-2">{catInfo.emoji} {catInfo.label}</p>
+                  <div className="space-y-0.5">
+                    {catTools.map((tool) => (
+                      <Link
+                        key={tool.id}
+                        href={`/${tool.id}`}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          tool.soon
+                            ? "opacity-40 pointer-events-none text-slate-500"
+                            : activeTool?.id === tool.id
+                            ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 font-semibold"
+                            : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800"
+                        }`}
+                      >
+                        <span>{tool.icon}</span>
+                        <span>{tool.name}</span>
+                        {tool.soon && <span className="ml-auto text-[10px] text-slate-400">soon</span>}
+                        {tool.isNew && !tool.soon && <span className="ml-auto text-[10px] font-bold text-rose-500">NEW</span>}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
