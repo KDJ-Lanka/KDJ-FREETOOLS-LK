@@ -67,14 +67,8 @@ export default function ToolLayout({ children }: { children: React.ReactNode }) 
       <aside className="hidden lg:flex w-56 xl:w-64 shrink-0 flex-col border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-[#0d1117]">
 
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-900 transition-colors">
-          <img src="/freetoolslogo.png" alt="FreeTools.lk" className="w-8 h-8 rounded-xl object-contain shadow shrink-0" />
-          <div className="min-w-0">
-            <p className="text-sm font-bold leading-none truncate">FreeTools.lk</p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-              Simple tools for everyone
-            </p>
-          </div>
+        <Link href="/" className="flex items-center justify-center px-5 py-4 border-b border-slate-200 dark:border-slate-800 hover:bg-white dark:hover:bg-slate-900 transition-colors">
+          <img src="/freetoolslogo.png" alt="FreeTools.lk" className="h-10 w-auto object-contain" />
         </Link>
 
         {/* Category label */}
