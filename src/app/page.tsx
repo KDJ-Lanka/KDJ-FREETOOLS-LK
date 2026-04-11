@@ -1,15 +1,17 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 /* ─── Types ─────────────────────────────────────────────────────── */
 
-type CategoryId = "all" | "pdf" | "image" | "text" | "dev";
+type CategoryId = "all" | "pdf";
 
 type Tool = {
   id: string;
   name: string;
   description: string;
+  icon: string;
   category: Exclude<CategoryId, "all">;
   popular?: boolean;
   soon?: boolean;
@@ -20,55 +22,29 @@ type Tool = {
 
 const CATEGORIES: { id: CategoryId; label: string; emoji: string }[] = [
   { id: "all", label: "All tools", emoji: "⚡" },
-  { id: "pdf", label: "PDF", emoji: "📄" },
-  { id: "image", label: "Images", emoji: "🖼️" },
-  { id: "text", label: "Text & code", emoji: "✏️" },
-  { id: "dev", label: "Dev utilities", emoji: "🛠️" },
+  { id: "pdf", label: "PDF Tools", emoji: "📄" },
 ];
 
 const CAT_LABEL: Record<CategoryId, string> = {
   all: "All",
   pdf: "PDF",
-  image: "Images",
-  text: "Text & code",
-  dev: "Dev",
 };
 
 const CAT_CHIP: Record<Exclude<CategoryId, "all">, string> = {
   pdf: "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300",
-  image: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300",
-  text: "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300",
-  dev: "bg-violet-50 text-violet-700 dark:bg-violet-950/60 dark:text-violet-300",
 };
 
 const TOOLS: Tool[] = [
-  /* PDF */
-  { id: "merge-pdf",     name: "Merge PDF",          description: "Combine multiple PDFs into one clean document.",        category: "pdf",   popular: true },
-  { id: "split-pdf",     name: "Split PDF",           description: "Extract specific pages or ranges from any PDF.",        category: "pdf" },
-  { id: "compress-pdf",  name: "Compress PDF",        description: "Reduce file size without noticeable quality loss.",     category: "pdf",   popular: true },
-  { id: "pdf-to-jpg",    name: "PDF → JPG",           description: "Export every PDF page as a crisp JPEG image.",          category: "pdf" },
-  { id: "jpg-to-pdf",    name: "JPG → PDF",           description: "Bundle one or more images into a single PDF.",          category: "pdf" },
-  { id: "rotate-pdf",    name: "Rotate PDF",          description: "Fix page orientation in a single click.",               category: "pdf",   soon: true },
-  { id: "watermark-pdf", name: "Watermark PDF",       description: "Stamp text or an image on every page.",                 category: "pdf",   soon: true },
-  { id: "protect-pdf",   name: "Protect PDF",         description: "Lock your document with a password.",                   category: "pdf",   soon: true },
-  { id: "unlock-pdf",    name: "Unlock PDF",          description: "Remove the password from a PDF you own.",               category: "pdf",   soon: true },
-  /* Images */
-  { id: "compress-img",  name: "Compress Image",      description: "Shrink PNG, JPG, and WebP without visible loss.",       category: "image", popular: true },
-  { id: "resize-img",    name: "Resize Image",        description: "Set exact pixel dimensions for any image.",             category: "image" },
-  { id: "convert-img",   name: "Convert Image",       description: "Switch between PNG, JPG, and WebP instantly.",          category: "image" },
-  { id: "crop-img",      name: "Crop Image",          description: "Trim to a custom size or aspect ratio.",                category: "image", soon: true },
-  { id: "remove-bg",     name: "Remove Background",   description: "Erase the background from any photo.",                  category: "image", soon: true, isNew: true },
-  /* Text & code */
-  { id: "word-count",    name: "Word Counter",        description: "Count words, characters, sentences and reading time.",  category: "text" },
-  { id: "case-convert",  name: "Case Converter",      description: "UPPER, lower, Title, camelCase, snake_case and more.",  category: "text" },
-  { id: "md-preview",    name: "Markdown Preview",    description: "Write and preview Markdown side-by-side in real time.", category: "text" },
-  { id: "json-fmt",      name: "JSON Formatter",      description: "Prettify, minify, and validate any JSON blob.",         category: "text" },
-  /* Dev utilities */
-  { id: "base64",        name: "Base64 Encode / Decode", description: "Encode or decode Base64 strings instantly.",         category: "dev" },
-  { id: "url-encode",    name: "URL Encode / Decode", description: "Encode or decode URL component strings.",              category: "dev" },
-  { id: "hash-gen",      name: "Hash Generator",      description: "Generate MD5, SHA-1, and SHA-256 hashes.",             category: "dev",  popular: true },
-  { id: "color-picker",  name: "Color Picker",        description: "Pick and convert between HEX, RGB, and HSL.",          category: "dev" },
-  { id: "uuid-gen",      name: "UUID Generator",      description: "Generate RFC 4122-compliant UUIDs on demand.",         category: "dev" },
+  { id: "merge-pdf",     name: "Merge PDF",       icon: "🔗", description: "Combine multiple PDF files into one document in seconds.",        category: "pdf", popular: true },
+  { id: "split-pdf",     name: "Split PDF",        icon: "✂️", description: "Extract pages or split a PDF into multiple separate files.",       category: "pdf", popular: true },
+  { id: "compress-pdf",  name: "Compress PDF",     icon: "📦", description: "Reduce PDF file size while keeping the best possible quality.",    category: "pdf", popular: true },
+  { id: "pdf-to-jpg",    name: "PDF to JPG",       icon: "🖼️", description: "Convert every PDF page into a high-quality JPG image.",            category: "pdf" },
+  { id: "jpg-to-pdf",    name: "JPG to PDF",       icon: "📎", description: "Turn one or more images into a single PDF document.",              category: "pdf" },
+  { id: "rotate-pdf",    name: "Rotate PDF",       icon: "🔄", description: "Fix page orientation — rotate any page to the right angle.",       category: "pdf" },
+  { id: "watermark-pdf", name: "Watermark PDF",    icon: "💧", description: "Stamp a custom text or image watermark on every page.",            category: "pdf" },
+  { id: "protect-pdf",   name: "Protect PDF",      icon: "🔒", description: "Lock your PDF with a password to keep it private.",               category: "pdf" },
+  { id: "unlock-pdf",    name: "Unlock PDF",       icon: "🔓", description: "Remove the password from a PDF you own.",                          category: "pdf" },
+  { id: "reorder-pdf",   name: "Reorder Pages",    icon: "🗂️", description: "Drag and drop pages to rearrange them in any order.",              category: "pdf", isNew: true },
 ];
 
 /* ─── Theme helper (no React state — touches the DOM directly) ──── */
@@ -115,10 +91,7 @@ export default function Home() {
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200 dark:border-slate-800">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-red-600 to-rose-500 flex items-center justify-center text-white text-xs font-bold shadow">
-            ft
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-bold leading-none truncate">FreeTools.lk</p>
+            FT
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate">
               Simple tools for everyone
             </p>
@@ -158,7 +131,7 @@ export default function Home() {
             <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wide">Total tools</p>
             <p className="text-2xl font-black mt-0.5 text-slate-900 dark:text-white">{TOOLS.length}</p>
             <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-              across {CATEGORIES.length - 1} categories
+              across {CATEGORIES.length - 1} PDF categories
             </p>
           </div>
 
@@ -184,7 +157,7 @@ export default function Home() {
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center gap-2 shrink-0">
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-red-600 to-rose-500 flex items-center justify-center text-white text-[10px] font-bold">
-              ft
+              FT
             </div>
             <span className="text-sm font-bold">FreeTools.lk</span>
           </div>
@@ -249,7 +222,7 @@ export default function Home() {
                 ? ` matching "${query}"`
                 : activeCategory !== "all"
                   ? ` in ${CAT_LABEL[activeCategory]}`
-                  : " across 4 categories"}
+                  : " — all PDF tools"}
             </p>
           </div>
 
@@ -259,13 +232,11 @@ export default function Home() {
               {filtered.map((tool) => (
                 <article
                   key={tool.id}
-                  className={`flex flex-col gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm transition-all ${tool.soon ? "opacity-50" : ""}`}
+                  className={`flex flex-col gap-3 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-red-200 dark:hover:border-red-900 hover:shadow-sm transition-all ${tool.soon ? "opacity-50" : ""}`}
                 >
-                  {/* Category + badges */}
+                  {/* Icon + badges */}
                   <div className="flex items-center justify-between gap-2">
-                    <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${CAT_CHIP[tool.category]}`}>
-                      {CAT_LABEL[tool.category]}
-                    </span>
+                    <span className="text-2xl leading-none">{tool.icon}</span>
                     <div className="flex items-center gap-1.5">
                       {tool.isNew && (
                         <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-300">
@@ -273,7 +244,7 @@ export default function Home() {
                         </span>
                       )}
                       {tool.popular && !tool.soon && (
-                        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-300">
                           Popular
                         </span>
                       )}
@@ -297,15 +268,15 @@ export default function Home() {
                         Coming soon
                       </span>
                     ) : (
-                      <button
-                        type="button"
+                      <Link
+                        href={`/${tool.id}`}
                         className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors"
                       >
                         Open tool
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                         </svg>
-                      </button>
+                      </Link>
                     )}
                   </div>
                 </article>
