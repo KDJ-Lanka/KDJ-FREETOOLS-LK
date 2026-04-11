@@ -1,5 +1,7 @@
 "use client";
 
+import ProcessingOverlay from "@/components/ProcessingOverlay";
+
 import { useCallback, useState } from "react";
 import { PDFDocument } from "pdf-lib";
 
@@ -215,6 +217,7 @@ export default function JpgToPdf() {
       <p className="mt-10 text-center text-xs text-slate-400 dark:text-slate-500">
         🔒 Your files are processed entirely in your browser. Nothing is uploaded to any server.
       </p>
+          <ProcessingOverlay active={processing} />
     </main>
   );
 }

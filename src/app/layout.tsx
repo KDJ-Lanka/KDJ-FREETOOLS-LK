@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ToolLayout from "@/components/ToolLayout";
+import SplashScreen from "@/components/SplashScreen";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+        <SplashScreen />
         <ToolLayout>{children}</ToolLayout>
       </body>
     </html>
