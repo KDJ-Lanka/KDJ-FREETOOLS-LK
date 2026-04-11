@@ -68,7 +68,7 @@ export default function ConvertImage() {
     try {
       const out = await imConvert(bytes, targetFormat);
       const fmtInfo = FORMATS.find(f => f.value === targetFormat)!;
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: fmtInfo.mime });
+      const blob = new Blob([out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength) as ArrayBuffer], { type: fmtInfo.mime });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

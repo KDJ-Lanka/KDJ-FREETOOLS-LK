@@ -28,7 +28,9 @@ export async function mupdfProtect(
     `encrypt=aes-256,user-password=${userPassword},owner-password=${ownerPwd},compress`
   );
   doc.destroy();
-  return buf.asUint8Array();
+  // Slice to get a clean standalone copy (not a view into WASM memory)
+  const raw = buf.asUint8Array();
+  return raw.slice();
 }
 
 export async function mupdfUnlock(
@@ -43,7 +45,8 @@ export async function mupdfUnlock(
   }
   const buf = doc.saveToBuffer("compress,garbage=4");
   doc.destroy();
-  return buf.asUint8Array();
+  const raw = buf.asUint8Array();
+  return raw.slice();
 }
 
 export async function mupdfCompress(pdfBytes: Uint8Array): Promise<Uint8Array> {
@@ -118,5 +121,5 @@ export async function mupdfRenderPage(
   pixmap.destroy();
   page.destroy();
   doc.destroy();
-  return jpeg;
+  return jpeg instanceof Uint8Array ? jpeg.slice() : new Uint8Array(jpeg);
 }

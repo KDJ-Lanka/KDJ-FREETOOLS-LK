@@ -101,7 +101,7 @@ export default function ResizeImage() {
       const ext = extMap[fmt] ?? "jpg";
       const mimeMap: Record<string, string> = { jpg: "image/jpeg", png: "image/png", webp: "image/webp" };
       const mime = mimeMap[fmt] ?? "image/jpeg";
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: mime });
+      const blob = new Blob([out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength) as ArrayBuffer], { type: mime });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

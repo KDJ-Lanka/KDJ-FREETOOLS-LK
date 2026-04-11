@@ -62,7 +62,7 @@ export default function CompressImage() {
       setResultSize(out.byteLength);
       const ext = format === "jpg" ? "jpg" : format;
       const mime = format === "jpg" ? "image/jpeg" : format === "png" ? "image/png" : "image/webp";
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: mime });
+      const blob = new Blob([out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength) as ArrayBuffer], { type: mime });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

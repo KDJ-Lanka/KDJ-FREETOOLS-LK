@@ -99,7 +99,7 @@ export default function CropImage() {
       const fmt = getFormat();
       const out = await imCrop(bytes, x, y, cropW, cropH, fmt);
       const mimeMap: Record<string, string> = { jpg: "image/jpeg", png: "image/png", webp: "image/webp" };
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: mimeMap[fmt] ?? "image/jpeg" });
+      const blob = new Blob([out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength) as ArrayBuffer], { type: mimeMap[fmt] ?? "image/jpeg" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

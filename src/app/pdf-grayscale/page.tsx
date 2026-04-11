@@ -55,7 +55,7 @@ export default function PdfGrayscale() {
     try {
       const out = await mupdfToGrayscale(bytes);
       setOutputSize(out.byteLength);
-      const blob = new Blob([out.buffer as ArrayBuffer], { type: "application/pdf" });
+      const blob = new Blob([out.buffer.slice(out.byteOffset, out.byteOffset + out.byteLength) as ArrayBuffer], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
