@@ -189,7 +189,7 @@ export default function SubtitleGeneratorClient() {
           onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
           onDragLeave={() => setDragging(false)}
           onClick={() => document.getElementById("sub-file-input")?.click()}
-          className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-colors mb-6 ${dragging ? "border-blue-400 bg-blue-50 dark:bg-blue-950/20" : "border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600"}`}
+          className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-colors mb-6 ${dragging ? "border-red-400 bg-red-50 dark:bg-red-950/20" : "border-slate-200 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-600"}`}
         >
           <input id="sub-file-input" type="file" accept="video/*,audio/*" className="hidden"
             onChange={(e) => { const f = e.target.files?.[0]; if (f) { setFile(f); setChunks([]); setError(null); } }} />
@@ -235,13 +235,13 @@ export default function SubtitleGeneratorClient() {
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Language spoken in the video</label>
             <select value={language} onChange={(e) => setLanguage(e.target.value)}
-              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+              className="w-full border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500">
               {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
             </select>
           </div>
           <div>
             <button onClick={run} disabled={processing}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors">
+            className="w-full bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-colors">
             Generate Subtitles
           </button>
         </div>
@@ -259,7 +259,7 @@ export default function SubtitleGeneratorClient() {
         <div className="space-y-4">
           {/* Streaming progress banner */}
           {processing && chunks.length > 0 && (
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900 text-sm text-blue-700 dark:text-blue-400">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900 text-sm text-red-700 dark:text-red-400">
               <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
@@ -294,8 +294,8 @@ export default function SubtitleGeneratorClient() {
                   ref={(el) => { rowRefs.current[chunk.id] = el; }}
                   className={`group flex items-start gap-3 px-3 py-2.5 rounded-xl border transition-colors ${
                     isActive
-                      ? "border-blue-400 bg-blue-50 dark:bg-blue-950/30"
-                      : "border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 bg-white dark:bg-slate-900"
+                      ? "border-red-400 bg-red-50 dark:bg-red-950/30"
+                      : "border-slate-200 dark:border-slate-700 hover:border-red-200 dark:hover:border-red-800 bg-white dark:bg-slate-900"
                   }`}
                 >
                   {/* Index */}
@@ -316,7 +316,7 @@ export default function SubtitleGeneratorClient() {
                     ) : (
                       <button
                         onClick={() => { seekTo(chunk.start); setEditingTime({ id: chunk.id, field: "start", val: fmtDisplay(chunk.start) }); }}
-                        className="text-xs font-mono text-left px-1.5 py-0.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors"
+                        className="text-xs font-mono text-left px-1.5 py-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors"
                         title="Click to seek / edit"
                       >▶ {fmtDisplay(chunk.start)}</button>
                     )}
