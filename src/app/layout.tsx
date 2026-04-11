@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import ToolLayout from "@/components/ToolLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,6 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
       <head>
-        {/* Apply saved theme before first paint to avoid flash */}
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('freetools-theme');if(t==='dark')document.documentElement.setAttribute('data-theme','dark')}catch(e){}})();`,
@@ -38,7 +38,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full antialiased bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-        {children}
+        <ToolLayout>{children}</ToolLayout>
       </body>
     </html>
   );
