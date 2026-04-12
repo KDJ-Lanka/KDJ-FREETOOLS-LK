@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { TOOLS } from "@/lib/tools";
 
+export const dynamic = "force-static";
+
 const BASE = "https://freetools.lk";
 
 export default function sitemap(): MetadataRoute.Sitemap {

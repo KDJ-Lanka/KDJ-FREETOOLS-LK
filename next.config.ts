@@ -1,23 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["mupdf", "@huggingface/transformers", "@imgly/background-removal", "face-api.js", "tesseract.js", "mammoth", "docx", "xlsx", "jspdf", "html2canvas", "jszip"],
+  output: "export",
+  images: { unoptimized: true },
   poweredByHeader: false,
   compress: true,
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
-          { key: "X-Content-Type-Options", value: "nosniff" },
-          { key: "X-Frame-Options", value: "SAMEORIGIN" },
-          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-        ],
-      },
-    ];
-  },
   webpack(config, { isServer }) {
     config.experiments = {
       ...config.experiments,
