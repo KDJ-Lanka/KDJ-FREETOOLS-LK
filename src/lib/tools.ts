@@ -121,4 +121,8 @@ export const TOOLS: Tool[] = [
   { id: "regex-tester",        name: "Regex Tester",          icon: "🔎", description: "Test Python regular expressions with live match highlighting and group details.", category: "code", isNew: true },
   { id: "hash-generator",      name: "Hash Generator",        icon: "🔐", description: "Generate MD5, SHA-1, SHA-256 and SHA-512 hashes from text or a file using Python.", category: "code", isNew: true },
   { id: "sql-playground",      name: "SQL Playground",        icon: "🗄️", description: "Practice SQL with live results — 3 built-in datasets, schema viewer, and guided examples.", category: "code", isNew: true, popular: true },
+  { id: "c-playground",        name: "C/C++ Playground",      icon: "⚙️", description: "Write and run C/C++ code in your browser — no installation needed. Supports arrays, pointers, structs, and recursion.", category: "code", isNew: true, popular: true },
+  { id: "number-converter",    name: "Number Converter",      icon: "🔢", description: "Convert between Binary, Octal, Decimal, and Hexadecimal with full step-by-step working.", category: "code", isNew: true },
+  { id: "algo-visualizer",     name: "Algorithm Visualizer",  icon: "📊", description: "Watch Bubble, Selection, and Insertion sort step-by-step with animated bar charts.", category: "code", isNew: true, popular: true },
+  { id: "logic-gates",         name: "Logic Gate Simulator",  icon: "⚡", description: "Interactive AND, OR, NOT, NAND, NOR, XOR, XNOR gate simulator with truth tables.", category: "code", isNew: true },
 ];
