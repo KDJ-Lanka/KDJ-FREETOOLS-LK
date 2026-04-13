@@ -145,8 +145,7 @@ export default function Client() {
         <p className="text-slate-500 dark:text-slate-400">
           Test Python{" "}
           <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">re</code>{" "}
-          patterns with live highlighting, groups and flags — via{" "}
-          <span className="font-semibold text-green-600 dark:text-green-400">Pyodide WASM</span>.
+          patterns with live highlighting, groups and flags — runs entirely in your browser.
         </p>
       </div>
 
@@ -304,9 +303,8 @@ export default function Client() {
 
       <p className="mt-8 text-xs text-slate-400 dark:text-slate-500">
         ⚡ Uses Python&apos;s{" "}
-        <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">re</code> module via{" "}
-        <a href="https://pyodide.org" target="_blank" rel="noopener noreferrer" className="underline">Pyodide</a>.
-        Results match Python behavior exactly. First load ≈8 MB (cached).
+        <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">re</code> module.
+        Results match Python behavior exactly. Runs entirely in your browser.
       </p>
     </main>
   );

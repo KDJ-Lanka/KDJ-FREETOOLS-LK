@@ -30,7 +30,7 @@ export async function getPyodide(
   if (_loading) return _loading;
 
   _loading = (async () => {
-    onStatus?.("Loading Python runtime (≈8 MB, cached after first use)…");
+    onStatus?.("Loading Python engine…");
 
     if (typeof window.loadPyodide === "undefined") {
       await new Promise<void>((resolve, reject) => {

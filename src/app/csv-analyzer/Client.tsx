@@ -104,8 +104,7 @@ export default function Client() {
           <h1 className="text-2xl sm:text-3xl font-black">CSV Analyzer</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Upload a CSV file and instantly get row/column stats, data types, missing values, and a data preview — powered by{" "}
-          <span className="font-semibold text-green-600 dark:text-green-400">Python (Pyodide WASM)</span>.
+          Upload a CSV file and instantly get row/column stats, data types, missing values, and a data preview — runs entirely in your browser.
         </p>
       </div>
 
@@ -239,9 +238,7 @@ export default function Client() {
       )}
 
       <p className="mt-8 text-xs text-slate-400 dark:text-slate-500">
-        ⚡ Powered by{" "}
-        <a href="https://pyodide.org" target="_blank" rel="noopener noreferrer" className="underline">Pyodide</a>{" "}
-        — Python stdlib csv &amp; statistics modules. File never leaves your device.
+        ⚡ All analysis runs locally in your browser — your file is never uploaded.
       </p>
     </main>
   );

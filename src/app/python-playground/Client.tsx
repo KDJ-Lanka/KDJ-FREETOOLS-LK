@@ -7,7 +7,7 @@ const EXAMPLES: { label: string; code: string }[] = [
   {
     label: "Hello World",
     code: `print("Hello from Python in the browser! 🐍")
-print("Running via Pyodide WASM")`,
+print("All processing happens locally on your device")`,
   },
   {
     label: "Fibonacci",
@@ -30,7 +30,7 @@ print("Evens:  ", evens)`,
   },
   {
     label: "String manipulation",
-    code: `text = "FreeTools.lk — built with Pyodide WASM"
+    code: `text = "FreeTools.lk — free tools for everyone"
 words = text.split()
 
 print(f"Word count: {len(words)}")
@@ -51,7 +51,7 @@ print(primes)`,
     label: "hashlib demo",
     code: `import hashlib
 
-text = "Hello, Pyodide!"
+text = "Hello, FreeTools.lk!"
 for algo in ["md5", "sha1", "sha256"]:
     h = hashlib.new(algo, text.encode()).hexdigest()
     print(f"{algo:8s}: {h}")`,
@@ -102,9 +102,7 @@ export default function Client() {
           <h1 className="text-2xl sm:text-3xl font-black">Python Playground</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Run Python code directly in your browser using{" "}
-          <span className="font-semibold text-green-600 dark:text-green-400">Pyodide WASM</span>
-          {" "}— no server, no install, 100% private.
+          Run Python code directly in your browser — no server, no install, 100% private.
         </p>
       </div>
 
@@ -235,11 +233,7 @@ export default function Client() {
       )}
 
       <p className="mt-6 text-xs text-slate-400 dark:text-slate-500">
-        ⚡ Powered by{" "}
-        <a href="https://pyodide.org" target="_blank" rel="noopener noreferrer" className="underline">
-          Pyodide
-        </a>{" "}
-        — CPython compiled to WebAssembly. Full Python stdlib available. First load ≈8 MB (cached by browser).
+        ⚡ Full Python standard library available. Runs entirely in your browser — no data is ever uploaded.
       </p>
     </main>
   );

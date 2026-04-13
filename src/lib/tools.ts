@@ -115,8 +115,8 @@ export const TOOLS: Tool[] = [
   { id: "qr-scanner",           name: "QR Code Scanner",       icon: "📷", description: "Scan and decode QR codes from images.", category: "ai", isNew: true },
   { id: "image-to-webp",        name: "Image to WebP/AVIF",    icon: "🖼️", description: "Convert images to modern WebP or AVIF format in browser.", category: "ai", isNew: true },
   { id: "e-signature",          name: "E-Signature Maker",     icon: "✍️", description: "Draw and export your digital signature as PNG.", category: "ai", isNew: true },
-  // ── Code / Developer tools powered by Pyodide WASM ───────────────────────
-  { id: "python-playground",   name: "Python Playground",     icon: "🐍", description: "Run Python code right in your browser — no install. Powered by Pyodide WASM.", category: "code", isNew: true, popular: true },
+  // ── Code / Developer tools ───────────────────────────────────────────────
+  { id: "python-playground",   name: "Python Playground",     icon: "🐍", description: "Run Python code right in your browser — no install, no server, 100% private.", category: "code", isNew: true, popular: true },
   { id: "csv-analyzer",        name: "CSV Analyzer",          icon: "📊", description: "Upload a CSV file and get instant statistics, preview, and per-column analysis with Python.", category: "code", isNew: true, popular: true },
   { id: "regex-tester",        name: "Regex Tester",          icon: "🔎", description: "Test Python regular expressions with live match highlighting and group details.", category: "code", isNew: true },
   { id: "hash-generator",      name: "Hash Generator",        icon: "🔐", description: "Generate MD5, SHA-1, SHA-256 and SHA-512 hashes from text or a file using Python.", category: "code", isNew: true },

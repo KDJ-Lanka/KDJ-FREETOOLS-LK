@@ -134,10 +134,7 @@ export default function Client() {
           <h1 className="text-2xl sm:text-3xl font-black">Hash Generator</h1>
         </div>
         <p className="text-slate-500 dark:text-slate-400">
-          Generate MD5, SHA-1, SHA-256, SHA-512 and more using Python&apos;s{" "}
-          <code className="text-xs bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">hashlib</code>{" "}
-          via{" "}
-          <span className="font-semibold text-green-600 dark:text-green-400">Pyodide WASM</span>. 100% private — data never leaves your browser.
+          Generate MD5, SHA-1, SHA-256, SHA-512 and more — 100% private, data never leaves your browser.
         </p>
       </div>
 
@@ -225,10 +222,7 @@ export default function Client() {
       )}
 
       <p className="mt-8 text-xs text-slate-400 dark:text-slate-500">
-        ⚡ Python{" "}
-        <code className="bg-slate-100 dark:bg-slate-800 px-1 rounded">hashlib</code> via{" "}
-        <a href="https://pyodide.org" target="_blank" rel="noopener noreferrer" className="underline">Pyodide</a>.
-        MD5/SHA-1 shown for legacy compatibility — use SHA-256+ for security. First load ≈8 MB (cached).
+        ⚡ MD5/SHA-1 shown for legacy compatibility — use SHA-256+ for security. Runs entirely in your browser.
       </p>
     </main>
   );
